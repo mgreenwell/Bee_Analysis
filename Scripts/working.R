@@ -157,36 +157,3 @@ for(i in species.list){  # Open loop
   plot(mean.growth.rate.plot)
   
 } # Close loop
-
-warnings()
-
-
-
-
-
-
-
-data <- read.csv("Data/growth.rates.csv")
-
-options(scipen = 0)
-
-
-data <- select(data, species, year, growth.rate.dif)
-
-data[is.na(data)] <- 0
-
-scaled <- NULL
-
-species.list <- unique(data$species)
-
-for (i in species.list){
-  
-  subset <- filter(data, species == i)
-  subset$growth.rate.dif <- scale(subset$growth.rate.dif, center = T, scale = T)
-  
-  scaled = rbind(scaled, subset)
-  
-}
-
-
-
