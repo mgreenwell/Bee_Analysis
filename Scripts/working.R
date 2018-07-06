@@ -8,7 +8,7 @@ library(tidyverse)
 # ============================ Load in data ===================================
 
 
-# growth.rates.csv is a data file containing interannual changes in sepcies 
+# growth.rates.csv is a data file containing interannual changes in species 
 # abundance.
 
 
@@ -62,40 +62,37 @@ mean.growth.rate.plot <- ggplot(
 mean.growth.rate.plot
 
 
-# 
+# === Plot mean of all species interannual changes in abundance - 1 species ===
 
 
-growth.rate <- read.csv("C://Users//dp005352//Dropbox//PhD//R_Projects//Synchrony_Analysis//Outputs//growth.rates.csv", header = T)
-
-
-# ============================ Format data ====================================
-
-
-# Remove rows that are not needed (tr0obs, col.ind.prev.year)
-
-growth.rate <- select(growth.rate, species, year, growth.rate.dif)
-
-
+# Create list of species from growth.rate data
 
 species.list <- unique(growth.rate$species)
-species.list
 
-head(growth.rate)
 
-tail(growth.rate)
+# Write for loop
+  # loop creates a subset of data removing one species each time (species i)
+  # Plots yearly mean growth rates minus species i each time
+  # Creates n plots where n is number of species in list
 
-subset(growth.rate, species != i)
-
-for(i in species.list){
+for(i in species.list){  # Open loop
   
-  #sp.data <- growth.rate[growth.rate$species == i,]
   
-  a <- subset(growth.rate, species != i) 
+  # a gets a subset of growth.rate data minus species i.
   
-  growth.rate.mean <- a %>% 
+    removed_species <- subset(growth.rate, species != i) 
+  
+    
+  # Growth.rate.mean gets removed_species 
+    # removed_species is grouped by year
+    # yearly mean growthrates of all species are calulated
+    
+  growth.rate.mean <- removed_species %>% 
     group_by(year) %>%
     summarise(mean.growth.rate = mean(growth.rate.dif, na.rm = TRUE))
   
+  
+  # Create plot of mean yearly growth rates across all species using subset of data
   mean.growth.rate.plot <- ggplot(
     growth.rate.mean, aes(
       x = year,
@@ -104,27 +101,12 @@ for(i in species.list){
     scale_x_continuous(breaks=seq(1975,2015,5)) +
     ggtitle(i)
   
+  
+  # Plot graph
+  
   plot(mean.growth.rate.plot)
   
-}
+} # Close loop
 
 warnings()
-tail(a)
-sp.data <- filter(species == i)}
 
-head(growth.rate)
-sp.data
-growth.rate.mean <- growth.rate %>% 
-  filter(species != 123) %>%
-  group_by(year) %>%
-  summarise(mean.growth.rate = mean(growth.rate.dif, na.rm = TRUE))
-
-mean.growth.rate.plot <- ggplot(
-  growth.rate.mean, aes(
-    x = year,
-    y = mean.growth.rate)) + 
-  geom_line() + 
-  scale_x_continuous(breaks=seq(1975,2015,5))
-
-mean.growth.rate.plot
-}
