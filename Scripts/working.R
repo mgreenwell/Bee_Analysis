@@ -67,11 +67,20 @@ for (i in species.list){
 } # Close loop
 
 
+# for some reason r is creating a dataframe within the dataframe
+# to remove this use
+# solution found at https://stackoverflow.com/questions/30896605/dataframe-within-dataframe
+
+scaled <- do.call(data.frame, scaled)
+
+
+
+
 # ========== Plot all species interannual changes in abundance ================
 
 
 growth.rate.plot <-ggplot(
-  growth.rate, aes(
+  scaled, aes(
     x = year,
     y = growth.rate.dif,
     colour = factor(species))) + 
@@ -83,28 +92,33 @@ growth.rate.plot
 
 # ======== Plot mean of all species interannual changes in abundance ==========
 
-
 # create table of mean growth rate differenctials grouped by year
 
-growth.rate.mean <- growth.rate %>% 
+growth.rate.mean <- scaled %>% 
   group_by(year) %>%
   summarise(mean.growth.rate = mean(growth.rate.dif, na.rm = TRUE))
 
+growth.rate.mean <- as.data.frame(growth.rate.mean)
 
+head(growth.rate.mean)
+is.numeric(growth.rate.mean$year)
+is.numeric(growth.rate.mean$mean.growth.rate)
 # Plot mean growth rate differentials
 
 mean.growth.rate.plot <- ggplot(
   growth.rate.mean, aes(
     x = year,
     y = mean.growth.rate)) + 
-  geom_line() + 
-  coord_cartesian(xlim = c(1975, 2015), ylim = c(-0.4, 0.4)) +
+  geom_hline(yintercept = 0) +
+  coord_cartesian(xlim = c(1975, 2015), ylim = c(-2, 2)) +
   scale_x_continuous(breaks = seq(1975, 2015, by = 2)) +
-  scale_y_continuous(breaks=seq(-0.4, 0.5, 0.05)) +
-  theme_classic() +
-  geom_hline(yintercept = 0)
+  scale_y_continuous(breaks=seq(-2, 2, 0.1)) +
+  geom_line() +
+  theme_classic() 
+  
 
 mean.growth.rate.plot
+
 
 
 # === Plot mean of all species interannual changes in abundance - 1 species ===
@@ -112,7 +126,7 @@ mean.growth.rate.plot
 
 # Create list of species from growth.rate data
 
-species.list <- unique(growth.rate$species)
+species.list <- unique(scaled$species)
 
 
 # Write for loop
@@ -125,7 +139,7 @@ for(i in species.list){  # Open loop
   
   # a gets a subset of growth.rate data minus species i.
   
-    removed_species <- subset(growth.rate, species != i) 
+    removed_species <- subset(scaled, species != i) 
   
     
   # Growth.rate.mean gets removed_species 
@@ -138,18 +152,20 @@ for(i in species.list){  # Open loop
   
   
   # Create plot of mean yearly growth rates across all species using subset of data
+
   
   mean.growth.rate.plot <- ggplot(
     growth.rate.mean, aes(
       x = year,
       y = mean.growth.rate)) + 
-    geom_line() + 
-    coord_cartesian(xlim = c(1975, 2015), ylim = c(-0.4, 0.4)) +
-    scale_x_continuous(breaks = seq(1975, 2015, by = 2)) +
-    scale_y_continuous(breaks=seq(-0.4, 0.5, 0.05)) +
+    geom_hline(yintercept = 0) +
+    coord_cartesian(xlim = c(1976, 2015), ylim = c(-2, 2)) +
+    scale_x_continuous(breaks = seq(1976, 2015, by = 2)) +
+    scale_y_continuous(breaks=seq(-2, 2, 0.1)) +
+    geom_line() +
     theme_classic() +
-    ggtitle(i) +
-    geom_hline(yintercept = 0)
+    ggtitle(i)
+  
   
 
   # Plot graph
