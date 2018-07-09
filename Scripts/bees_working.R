@@ -19,10 +19,8 @@ species_data <- read.csv("Data/species.data.csv", header = T, strip.white=TRUE)
 
 # ============================ Format data ====================================
 
-head(species_data)
 
 species_data$species <- gsub(" ", "_", species_data$species)
-# Remove rows that are not needed (tr0obs, col.ind.prev.year)
 
 
 # ===================== Calculating Growth Rates ==============================
@@ -69,12 +67,12 @@ for(i in species.list){
 # ============================ Format data ====================================
 
 
+# Remove unnecessary columns from data
+
 bee_species_data <- growth.rate %>% select(-(col.ind.prev.year), -(occupancy))
 
 head(bee_species_data)
-
-
-
+tail(bee_species_data)
 
 # Set NA values to 0
 # NA values are for the 1st year of data therefore no differential.
@@ -224,3 +222,58 @@ for(i in species.list){  # Open loop
   
 } # Close loop
 
+
+
+# =========================== Bean pollinators ================================
+
+
+bean_species <- scaled %>% filter(Field.Bean == 1)
+
+
+# Create list of species from growth.rate data
+
+bean_species_list <- unique(bean_species$species)
+
+
+# Write for loop
+# loop creates a subset of data removing one species each time (species i)
+# Plots yearly mean growth rates minus species i each time
+# Creates n plots where n is number of species in list
+
+for(i in bean_species_list){  # Open loop
+  
+  
+  # a gets a subset of growth.rate data minus species i.
+  
+  bean_removed_species <- subset(bean_species, species != i) 
+  
+  
+  # Growth.rate.mean gets removed_species 
+  # removed_species is grouped by year
+  # yearly mean growthrates of all species are calulated
+  
+  bean_growth_rate_mean <- bean_removed_species %>% 
+    group_by(year) %>%
+    summarise(mean.growth.rate = mean(growth.rate.dif, na.rm = TRUE))
+  
+  
+  # Create plot of mean yearly growth rates across all species using subset of data
+  
+  
+  bean_mean_growth_rate_plot <- ggplot(
+    bean_growth_rate_mean, aes(
+      x = year,
+      y = mean.growth.rate)) + 
+    geom_hline(yintercept = 0) +
+    coord_cartesian(xlim = c(1985, 2015), ylim = c(-1.5, 2)) +
+    scale_x_continuous(breaks = seq(1985, 2015, by = 2)) +
+    scale_y_continuous(breaks=seq(-1.5, 2, 0.1)) +
+    geom_line() +
+    theme_classic() +
+    ggtitle(i, "Removed") 
+  
+  # Plot graph
+  
+  plot(bean_mean_growth_rate_plot)
+  
+} # Close loop
