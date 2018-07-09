@@ -100,9 +100,7 @@ growth.rate.mean <- scaled %>%
 
 growth.rate.mean <- as.data.frame(growth.rate.mean)
 
-head(growth.rate.mean)
-is.numeric(growth.rate.mean$year)
-is.numeric(growth.rate.mean$mean.growth.rate)
+
 # Plot mean growth rate differentials
 
 mean.growth.rate.plot <- ggplot(
