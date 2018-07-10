@@ -332,7 +332,9 @@ for(i in bean_species_list){  # Open loop
   plot(bean_mean_growth_rate_plot)
   
   
-  deficit <- bean_growth_rate_mean %>% mutate( theta = -0.1, deficit = mean.growth.rate - theta)
+  deficit <- bean_growth_rate_mean %>% 
+    mutate( theta = -0.1, deficit = mean.growth.rate - theta)
+  
   deficit <- deficit %>% filter(deficit < 0)
   
   
