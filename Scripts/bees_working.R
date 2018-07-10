@@ -277,3 +277,70 @@ for(i in bean_species_list){  # Open loop
   plot(bean_mean_growth_rate_plot)
   
 } # Close loop
+
+
+
+# Plot and calculate deficits
+
+
+# Create list of species from growth.rate data
+
+bean_species_list <- unique(bean_species$species)
+
+deficit_table <- NULL
+# Write for loop
+# loop creates a subset of data removing one species each time (species i)
+# Plots yearly mean growth rates minus species i each time
+# Creates n plots where n is number of species in list
+
+for(i in bean_species_list){  # Open loop
+  
+  
+  # a gets a subset of growth.rate data minus species i.
+  
+  bean_removed_species <- subset(bean_species, species != i) 
+  
+  
+  # Growth.rate.mean gets removed_species 
+  # removed_species is grouped by year
+  # yearly mean growthrates of all species are calulated
+  
+  bean_growth_rate_mean <- bean_removed_species %>% 
+    group_by(year) %>%
+    summarise(mean.growth.rate = mean(growth.rate.dif, na.rm = TRUE))
+  bean_growth_rate_mean
+  
+  # Create plot of mean yearly growth rates across all species using subset of data
+  
+  
+  bean_mean_growth_rate_plot <- ggplot(
+    bean_growth_rate_mean, aes(
+      x = year,
+      y = mean.growth.rate)) +
+    geom_hline(aes(yintercept= -0.1) , colour="red") +
+    geom_hline(yintercept = 0) +
+    coord_cartesian(xlim = c(1985, 2015), ylim = c(-1.5, 2)) +
+    scale_x_continuous(breaks = seq(1985, 2015, by = 2)) +
+    scale_y_continuous(breaks=seq(-1.5, 2, 0.1)) +
+    geom_col() +
+    theme_classic() +
+    ggtitle(i, "Removed") 
+  
+  
+  # Plot graph
+  
+  plot(bean_mean_growth_rate_plot)
+  
+  
+  deficit <- bean_growth_rate_mean %>% mutate( theta = -0.1, deficit = mean.growth.rate - theta)
+  deficit <- deficit %>% filter(deficit < 0)
+  
+  
+  a <- sum(deficit$deficit)
+  b <- i
+  deficit.all <- cbind(a, b)
+  
+  deficit_table <- rbind(deficit_table, deficit.all)
+  
+} # Close loop
+deficit_table
