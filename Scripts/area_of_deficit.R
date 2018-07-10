@@ -198,13 +198,15 @@ for(i in bean_species_list){  # Open loop
      bean_growth_rate_mean, aes(
        x = year,
        y = mean.growth.rate)) +
-     geom_hline(yintercept = -0.1) +
+     geom_hline(aes(yintercept= -0.1) , colour="red") +
+     geom_hline(yintercept = 0) +
      coord_cartesian(xlim = c(1985, 2015), ylim = c(-1.5, 2)) +
      scale_x_continuous(breaks = seq(1985, 2015, by = 2)) +
      scale_y_continuous(breaks=seq(-1.5, 2, 0.1)) +
      geom_col() +
      theme_classic() +
-     ggtitle(i, "Removed")
+     ggtitle(i, "Removed") 
+
   
    # Plot graph
   
