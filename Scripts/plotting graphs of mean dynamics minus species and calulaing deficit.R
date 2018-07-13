@@ -122,7 +122,7 @@ for (i in species.list){
 
 scaled <- do.call(data.frame, scaled)
 
-
+write.csv(scaled, "Outputs/scaled_species_data.csv")
 
 
 # ========== Plot all species interannual changes in abundance ================
