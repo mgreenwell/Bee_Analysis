@@ -162,3 +162,17 @@ ggplot(bean_species_removal,
   theme_classic() +
   labs(x = "Number of species removed from system",
        y = "Deficit (units below theta)")
+
+
+# ============ write csv for use in plot of all three plant types =============
+
+
+# Create new column indicating which plant is being pollinated
+bean_species_removal <- mutate(bean_species_removal, bean = "bean")
+
+
+# Write file to csv
+
+write.csv(bean_species_removal, 
+          "Outputs/bean_pollinators_additonal_removal.csv")
+
