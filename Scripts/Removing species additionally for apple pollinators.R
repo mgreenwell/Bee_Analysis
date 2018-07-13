@@ -39,7 +39,7 @@ species_list <- as.data.frame(species_list)
 
 # Create an empty dataframe
 
-bean_species_removal <- NULL
+apple_species_removal <- NULL
 
 
 # Create list on numbers from 1 to 19 (number of species in dataframe)
@@ -124,9 +124,9 @@ for (x in num_list){
     total_deficit$species_removed <- 19-x
     
     
-    # Bind total deficit dataframe to bean_species_removal
+    # Bind total deficit dataframe to apple_species_removal
     
-    bean_species_removal <- rbind(bean_species_removal, total_deficit)
+    apple_species_removal <- rbind(apple_species_removal, total_deficit)
     
     
   } # close loop 1 
@@ -135,10 +135,10 @@ for (x in num_list){
 
 # ========================== Plotting line plot ===============================
 
-# bean_species_removal gets bean_species_removal that has been grouped by the 
+# apple_species_removal gets apple_species_removal that has been grouped by the 
 # number of species removed then mean deficits calculated, plus sd and n
 
-bean_species_removal <- bean_species_removal %>% 
+apple_species_removal <- apple_species_removal %>% 
   group_by(species_removed) %>%
   summarise(mean_total_deficit = mean(total_deficit),
             sd_total_deficit = sd(total_deficit),
@@ -146,13 +146,13 @@ bean_species_removal <- bean_species_removal %>%
 
 # calculate standard error 
 
-bean_species_removal <- mutate(bean_species_removal, 
+apple_species_removal <- mutate(apple_species_removal, 
                                s.e. = sd_total_deficit / sqrt(n))
 
 
 # Create plot to show effect of additional species removal on levels of deficit
 
-ggplot(bean_species_removal,
+ggplot(apple_species_removal,
        aes(x = species_removed, 
            y = mean_total_deficit)) +
   geom_line() +
