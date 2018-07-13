@@ -162,3 +162,18 @@ ggplot(oilseed_rape_species_removal,
   theme_classic() +
   labs(x = "Number of species removed from system",
        y = "Deficit (units below theta)")
+
+
+# ============ write csv for use in plot of all three plant types =============
+
+
+# Create new column indicating which plant is being pollinated
+
+oilseed_rape_species_removal <- mutate(oilseed_rape_species_removal, 
+                                       oilseed_rape = "oilseed_rape")
+
+
+# Write file to csv
+
+write.csv(oilseed_rape_species_removal, 
+          "Outputs/oilseed_rape_pollinators_additonal_removal.csv")
