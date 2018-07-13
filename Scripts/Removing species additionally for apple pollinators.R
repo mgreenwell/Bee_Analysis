@@ -169,7 +169,7 @@ ggplot(apple_species_removal,
 
 
 # Create new column indicating which plant is being pollinated
-apple_species_removal <- mutate(apple_species_removal, apple = "Apple")
+apple_species_removal <- mutate(apple_species_removal, apple = "apple")
 
 
 # Write file to csv
