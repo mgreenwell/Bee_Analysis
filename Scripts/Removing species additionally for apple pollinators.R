@@ -162,3 +162,18 @@ ggplot(apple_species_removal,
   theme_classic() +
   labs(x = "Number of species removed from system",
        y = "Deficit (units below theta)")
+
+
+
+# ============ write csv for use in plot of all three plant types =============
+
+
+# Create new column indicating which plant is being pollinated
+apple_species_removal <- mutate(apple_species_removal, apple = "Apple")
+
+
+# Write file to csv
+
+write.csv(apple_species_removal, 
+          "Outputs/apple_pollinators_additonal_removal.csv")
+
