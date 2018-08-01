@@ -24,8 +24,7 @@ species_data <- read.csv(
   #Only need species, year & growth.rate.dif
 
 data <- species_data %>% 
-  filter(Field.Bean == 1) %>%
-  select(species, year, growth.rate.dif)
+  filter(Field.Bean == 1) 
 
 
 # ========================== Writing loops ====================================
@@ -44,7 +43,7 @@ bean_species_removal <- NULL
 
 # Create list on numbers from 1 to 6 (number of species in dataframe)
 
-num_list <- 1:6
+num_list <- 6:1
 
 
 # Loops create a table of mean deficit below a value of theta, sd and n
@@ -95,20 +94,20 @@ for (x in num_list){
     
      data_mean <- filtered_data %>% 
       group_by(year) %>%
-      summarise(mean_gr = mean(growth.rate.dif, na.rm = TRUE),
+      summarise(mean_occ = mean(occupancy, na.rm = TRUE),
                 nremoved = 6-x)
     
      data_mean <- as.data.frame(data_mean)
     
-     
+
      # Create new dataframe whereby a value for theta is set
      # Using theta the total amount where growth rate differential is lower 
      # than theta is calculated
    
       deficit <- data_mean %>% 
-      mutate( theta = -0.1, deficit = mean_gr - theta)
+      mutate(theta = -0.1, deficit = mean_occ - theta)
     
-    
+
     # Only interested in negative deficit, all values above zero are credit
       
     deficit <- deficit %>% filter(deficit < 0)
@@ -118,7 +117,7 @@ for (x in num_list){
     
     total_deficit <- sum(deficit$deficit)
     total_deficit<-as.data.frame(total_deficit)
-    
+
     # Add new column indicating how many species have been removed from analysis
     
     total_deficit$species_removed <- 6-x
@@ -149,7 +148,7 @@ bean_species_removal <- bean_species_removal %>%
 bean_species_removal <- mutate(bean_species_removal, 
                                s.e. = sd_total_deficit / sqrt(n))
 
-
+bean_species_removal
 # Create plot to show effect of additional species removal on levels of deficit
 
 ggplot(bean_species_removal,
