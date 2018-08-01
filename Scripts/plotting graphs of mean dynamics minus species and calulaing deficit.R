@@ -23,61 +23,7 @@ species_data <- read.csv("Data/species.data.csv", header = T, strip.white=TRUE)
 species_data$species <- gsub(" ", "_", species_data$species)
 
 
-# ===================== Calculating Growth Rates ==============================
-
-
-# create a list of species codes that is the same as those in species_data
-
-species.list <- unique(species_data$species)
-
-
-# Create empty data frame in which to put loop output
-
-growth.rate=NULL          
-
-
-# Open loop
-# for i in species.list = everytime i occurs within species list
-
-for(i in species.list){ 
-  
-  
-  # create dataframe sp.data. where sp.data is the same as species_data with
-  # specie set to i
-  
-  sp.data <- species_data[species_data$species == i,]
-  
-  
-  # create 2 new columns in sp.data.
-  # New column 1 = tr0obs column offset by one 
-  # i.e. the value of the year  previous
-  # New column 2 = tr0obs column - tr0obs offset by one column
-  
-  sp.data <- sp.data %>%
-    mutate(col.ind.prev.year = lag(occupancy)) %>% 
-    mutate(growth.rate.dif = occupancy - col.ind.prev.year)
-  
-  
-  # Bind the two data frames growth.rate and sp.data together
-  growth.rate = rbind(growth.rate,sp.data)
-  
-}  # Close loop
-
-
 # ============================ Format data ====================================
-
-
-# Remove unnecessary columns from data
-
-bee_species_data <- growth.rate %>% select(-(col.ind.prev.year), -(occupancy))
-
-head(bee_species_data)
-tail(bee_species_data)
-
-# Set NA values to 0
-# NA values are for the 1st year of data therefore no differential.
-
-bee_species_data[is.na(bee_species_data)] <- 0
 
 
 # Scaling data around mean of 0 and sd of 1
@@ -89,7 +35,7 @@ scaled <- NULL
 
 # Create list of species names
 
-species.list <- unique(bee_species_data$species)
+species.list <- unique(species_data$species)
 
 
 # Open for loop
@@ -100,12 +46,12 @@ for (i in species.list){
   
   # subset gets growth.rate data for one species (species i)
   
-  subset <- filter(bee_species_data, species == i)
+  subset <- filter(species_data, species == i)
   
   
-  # Scale growth.rate.dif for species i
+  # Scale occupancy for species i
   
-  subset$growth.rate.dif <- scale(subset$growth.rate.dif, center = T, scale = T)
+  subset$occupancy <- scale(subset$occupancy, center = T, scale = T)
   
   
   # Bind subset onto scaled dataset
@@ -128,16 +74,15 @@ write.csv(scaled, "Outputs/scaled_species_data.csv")
 # ========== Plot all species interannual changes in abundance ================
 
 
-growth.rate.plot <-ggplot(
+occupancy_plot <-ggplot(
   scaled, aes(
     x = year,
-    y = growth.rate.dif,
+    y = occupancy,
     colour = factor(species))) + 
   geom_line() + 
   scale_x_continuous(breaks = seq(1975, 2015, 5))
 
-growth.rate.plot
-
+occupancy_plot
 
 
 # ======== Plot mean of all species interannual changes in abundance ==========
@@ -145,19 +90,19 @@ growth.rate.plot
 
 # create table of mean growth rate differenctials grouped by year
 
-growth.rate.mean <- scaled %>% 
+occupancy.mean <- scaled %>% 
   group_by(year) %>%
-  summarise(mean.growth.rate = mean(growth.rate.dif, na.rm = TRUE))
+  summarise(mean.occupancy = mean(occupancy, na.rm = TRUE))
 
-growth.rate.mean <- as.data.frame(growth.rate.mean)
+occupancy.mean <- as.data.frame(occupancy.mean)
 
 
 # Plot mean growth rate differentials
 
-mean.growth.rate.plot <- ggplot(
-  growth.rate.mean, aes(
+mean.occupancy.plot <- ggplot(
+  occupancy.mean, aes(
     x = year,
-    y = mean.growth.rate)) + 
+    y = mean.occupancy)) + 
   geom_hline(yintercept = 0) +
   coord_cartesian(xlim = c(1985, 2015), ylim = c(-1, 1.5)) +
   scale_x_continuous(breaks = seq(1985, 2015, by = 2)) +
@@ -166,7 +111,7 @@ mean.growth.rate.plot <- ggplot(
   theme_classic() 
 
 
-mean.growth.rate.plot
+mean.occupancy.plot
 
 
 
@@ -191,22 +136,22 @@ for(i in species.list){  # Open loop
   removed_species <- subset(scaled, species != i) 
   
   
-  # Growth.rate.mean gets removed_species 
+  # occupancy.mean gets removed_species 
   # removed_species is grouped by year
   # yearly mean growthrates of all species are calulated
   
-  growth.rate.mean <- removed_species %>% 
+  occupancy.mean <- removed_species %>% 
     group_by(year) %>%
-    summarise(mean.growth.rate = mean(growth.rate.dif, na.rm = TRUE))
+    summarise(mean.occupancy = mean(occupancy, na.rm = TRUE))
   
   
   # Create plot of mean yearly growth rates across all species using subset of data
   
 
-  mean.growth.rate.plot <- ggplot(
-    growth.rate.mean, aes(
+  mean.occupancy.plot <- ggplot(
+    occupancy.mean, aes(
       x = year,
-      y = mean.growth.rate)) + 
+      y = mean.occupancy)) + 
     geom_hline(yintercept = 0) +
     coord_cartesian(xlim = c(1985, 2015), ylim = c(-1, 1.5)) +
     scale_x_continuous(breaks = seq(1985, 2015, by = 2)) +
@@ -218,7 +163,7 @@ for(i in species.list){  # Open loop
   
   # Plot graph
   
-  plot(mean.growth.rate.plot)
+  plot(mean.occupancy.plot)
   
 } # Close loop
 
@@ -248,22 +193,22 @@ for(i in bean_species_list){  # Open loop
   bean_removed_species <- subset(bean_species, species != i) 
   
   
-  # Growth.rate.mean gets removed_species 
+  # occupancy.mean gets removed_species 
   # removed_species is grouped by year
   # yearly mean growthrates of all species are calulated
   
-  bean_growth_rate_mean <- bean_removed_species %>% 
+  bean_occupancy_mean <- bean_removed_species %>% 
     group_by(year) %>%
-    summarise(mean.growth.rate = mean(growth.rate.dif, na.rm = TRUE))
+    summarise(mean.occupancy = mean(occupancy, na.rm = TRUE))
   
   
   # Create plot of mean yearly growth rates across all species using subset of data
   
   
-  bean_mean_growth_rate_plot <- ggplot(
-    bean_growth_rate_mean, aes(
+  bean_mean_occupancy_plot <- ggplot(
+    bean_occupancy_mean, aes(
       x = year,
-      y = mean.growth.rate)) + 
+      y = mean.occupancy)) + 
     geom_hline(yintercept = 0) +
     coord_cartesian(xlim = c(1985, 2015), ylim = c(-1.5, 2)) +
     scale_x_continuous(breaks = seq(1985, 2015, by = 2)) +
@@ -274,7 +219,7 @@ for(i in bean_species_list){  # Open loop
   
   # Plot graph
   
-  plot(bean_mean_growth_rate_plot)
+  plot(bean_mean_occupancy_plot)
   
 } # Close loop
 
@@ -301,22 +246,22 @@ for(i in bean_species_list){  # Open loop
   bean_removed_species <- subset(bean_species, species != i) 
   
   
-  # Growth.rate.mean gets removed_species 
+  # occupancy.mean gets removed_species 
   # removed_species is grouped by year
   # yearly mean growthrates of all species are calulated
   
-  bean_growth_rate_mean <- bean_removed_species %>% 
+  bean_occupancy_mean <- bean_removed_species %>% 
     group_by(year) %>%
-    summarise(mean.growth.rate = mean(growth.rate.dif, na.rm = TRUE))
-  bean_growth_rate_mean
+    summarise(mean.occupancy = mean(occupancy, na.rm = TRUE))
+  bean_occupancy_mean
   
   # Create plot of mean yearly growth rates across all species using subset of data
   
   
-  bean_mean_growth_rate_plot <- ggplot(
-    bean_growth_rate_mean, aes(
+  bean_mean_occupancy_plot <- ggplot(
+    bean_occupancy_mean, aes(
       x = year,
-      y = mean.growth.rate)) +
+      y = mean.occupancy)) +
     geom_hline(aes(yintercept= -0.1) , colour="red") +
     geom_hline(yintercept = 0) +
     coord_cartesian(xlim = c(1985, 2015), ylim = c(-1.5, 2)) +
@@ -329,11 +274,11 @@ for(i in bean_species_list){  # Open loop
   
   # Plot graph
   
-  plot(bean_mean_growth_rate_plot)
+  plot(bean_mean_occupancy_plot)
   
   
-  deficit <- bean_growth_rate_mean %>% 
-    mutate( theta = -0.1, deficit = mean.growth.rate - theta)
+  deficit <- bean_occupancy_mean %>% 
+    mutate( theta = -0.1, deficit = mean.occupancy - theta)
   
   deficit <- deficit %>% filter(deficit < 0)
   
