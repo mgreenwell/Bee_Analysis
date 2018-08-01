@@ -22,10 +22,10 @@ species_data <- read.csv(
   # Only interested in bees that pollinate beans
 # Remoe unnecceary columns
   #Only need species, year & growth.rate.dif
-
+data$species
 data <- species_data %>% 
-  filter(Field.Bean == 1) 
-
+  filter(Field.Bean == 1) %>%
+  filter(species != "Bombus_hypnorum")
 
 # ========================== Writing loops ====================================
 
@@ -43,7 +43,7 @@ bean_species_removal <- NULL
 
 # Create list on numbers from 1 to 6 (number of species in dataframe)
 
-num_list <- 6:1
+num_list <- 5:1
 
 
 # Loops create a table of mean deficit below a value of theta, sd and n
@@ -94,8 +94,8 @@ for (x in num_list){
     
      data_mean <- filtered_data %>% 
       group_by(year) %>%
-      summarise(mean_occ = mean(occupancy, na.rm = TRUE),
-                nremoved = 6-x)
+      summarise(mean_occ = mean(occupancy, na.rm = T),
+                nremoved = 5-x)
     
      data_mean <- as.data.frame(data_mean)
     
@@ -120,7 +120,7 @@ for (x in num_list){
 
     # Add new column indicating how many species have been removed from analysis
     
-    total_deficit$species_removed <- 6-x
+    total_deficit$species_removed <- 5-x
     
     
     # Bind total deficit dataframe to bean_species_removal
