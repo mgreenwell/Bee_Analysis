@@ -24,9 +24,8 @@ species_data <- read.csv(
 #Only need species, year & growth.rate.dif
 
 data <- species_data %>% 
-  filter(Apple == 1) %>%
-  select(species, year, growth.rate.dif)
-
+  filter(Apple == 1)
+  
 
 # ========================== Writing loops ====================================
 
@@ -95,7 +94,7 @@ for (x in num_list){
     
     data_mean <- filtered_data %>% 
       group_by(year) %>%
-      summarise(mean_gr = mean(growth.rate.dif, na.rm = TRUE),
+      summarise(mean_occ = mean(occupancy, na.rm = TRUE),
                 nremoved = 19-x)
     
     data_mean <- as.data.frame(data_mean)
@@ -106,7 +105,7 @@ for (x in num_list){
     # than theta is calculated
     
     deficit <- data_mean %>% 
-      mutate( theta = -0.1, deficit = mean_gr - theta)
+      mutate( theta = -0.1, deficit = mean_occ - theta)
     
     
     # Only interested in negative deficit, all values above zero are credit
