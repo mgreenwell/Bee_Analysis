@@ -14,7 +14,6 @@ species_data <- read.csv(
   "Outputs/scaled_species_data.csv", 
   header = T, strip.white=TRUE)
 
-head(species_data)
 # ============================= Format data ===================================
 
 
@@ -24,9 +23,7 @@ head(species_data)
 #Only need species, year & growth.rate.dif
 
 data <- species_data %>% 
-  filter(Oilseed.Rape == 1) %>%
-  select(species, year, growth.rate.dif)
-
+  filter(Oilseed.Rape == 1)
 
 # ========================== Writing loops ====================================
 
@@ -95,7 +92,7 @@ for (x in num_list){
     
     data_mean <- filtered_data %>% 
       group_by(year) %>%
-      summarise(mean_gr = mean(growth.rate.dif, na.rm = TRUE),
+      summarise(mean_occ = mean(occupancy, na.rm = TRUE),
                 nremoved = 30-x)
     
     data_mean <- as.data.frame(data_mean)
@@ -106,7 +103,7 @@ for (x in num_list){
     # than theta is calculated
     
     deficit <- data_mean %>% 
-      mutate( theta = -0.1, deficit = mean_gr - theta)
+      mutate(theta = -0.1, deficit = mean_occ - theta)
     
     
     # Only interested in negative deficit, all values above zero are credit
@@ -123,7 +120,7 @@ for (x in num_list){
     
     total_deficit$species_removed <- 30-x
     
-    
+   
     # Bind total deficit dataframe to oilseed_rape_species_removal
     
     oilseed_rape_species_removal <- rbind(oilseed_rape_species_removal, total_deficit)
