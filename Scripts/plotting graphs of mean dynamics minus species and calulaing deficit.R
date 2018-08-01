@@ -7,7 +7,7 @@ library(tidyverse)
 # ============================ Load in data ===================================
 
 
-# growth.rates.csv is a data file containing interannual changes in species 
+# species.data.csv is a data file containing interannual changes in species 
 # abundance.
 
 
@@ -35,16 +35,16 @@ scaled <- NULL
 
 # Create list of species names
 
-species.list <- unique(species_data$species)
+species_list <- unique(species_data$species)
 
 
 # Open for loop
 # Loop creates new df each time of scaled values. 
 # Binds scaled values onto scaled dataset
 
-for (i in species.list){
+for (i in species_list){
   
-  # subset gets growth.rate data for one species (species i)
+  # subset gets species_data data for one species (species i)
   
   subset <- filter(species_data, species == i)
   
@@ -90,19 +90,19 @@ occupancy_plot
 
 # create table of mean growth rate differenctials grouped by year
 
-occupancy.mean <- scaled %>% 
+occupancy_mean <- scaled %>% 
   group_by(year) %>%
-  summarise(mean.occupancy = mean(occupancy, na.rm = TRUE))
+  summarise(mean_occupancy = mean(occupancy, na.rm = TRUE))
 
-occupancy.mean <- as.data.frame(occupancy.mean)
+occupancy_mean <- as.data.frame(occupancy_mean)
 
 
 # Plot mean growth rate differentials
 
-mean.occupancy.plot <- ggplot(
-  occupancy.mean, aes(
+mean_occupancy_plot <- ggplot(
+  occupancy_mean, aes(
     x = year,
-    y = mean.occupancy)) + 
+    y = mean_occupancy)) + 
   geom_hline(yintercept = 0) +
   coord_cartesian(xlim = c(1985, 2015), ylim = c(-1, 1.5)) +
   scale_x_continuous(breaks = seq(1985, 2015, by = 2)) +
@@ -111,16 +111,16 @@ mean.occupancy.plot <- ggplot(
   theme_classic() 
 
 
-mean.occupancy.plot
+mean_occupancy_plot
 
 
 
 # === Plot mean of all species interannual changes in abundance - 1 species ===
 
 
-# Create list of species from growth.rate data
+# Create list of species from scaled data
 
-species.list <- unique(scaled$species)
+species_list <- unique(scaled$species)
 
 
 # Write for loop
@@ -128,30 +128,30 @@ species.list <- unique(scaled$species)
 # Plots yearly mean growth rates minus species i each time
 # Creates n plots where n is number of species in list
 
-for(i in species.list){  # Open loop
+for(i in species_list){  # Open loop
   
   
-  # a gets a subset of growth.rate data minus species i.
+  # a gets a subset of scaled data minus species i.
   
   removed_species <- subset(scaled, species != i) 
   
   
-  # occupancy.mean gets removed_species 
+  # occupancy_mean gets removed_species 
   # removed_species is grouped by year
   # yearly mean growthrates of all species are calulated
   
-  occupancy.mean <- removed_species %>% 
+  occupancy_mean <- removed_species %>% 
     group_by(year) %>%
-    summarise(mean.occupancy = mean(occupancy, na.rm = TRUE))
+    summarise(mean_occupancy = mean(occupancy, na.rm = TRUE))
   
   
   # Create plot of mean yearly growth rates across all species using subset of data
   
 
-  mean.occupancy.plot <- ggplot(
-    occupancy.mean, aes(
+  mean_occupancy_plot <- ggplot(
+    occupancy_mean, aes(
       x = year,
-      y = mean.occupancy)) + 
+      y = mean_occupancy)) + 
     geom_hline(yintercept = 0) +
     coord_cartesian(xlim = c(1985, 2015), ylim = c(-1, 1.5)) +
     scale_x_continuous(breaks = seq(1985, 2015, by = 2)) +
@@ -163,7 +163,7 @@ for(i in species.list){  # Open loop
   
   # Plot graph
   
-  plot(mean.occupancy.plot)
+  plot(mean_occupancy_plot)
   
 } # Close loop
 
@@ -175,7 +175,7 @@ for(i in species.list){  # Open loop
 bean_species <- scaled %>% filter(Field.Bean == 1)
 
 
-# Create list of species from growth.rate data
+# Create list of species from scaled data
 
 bean_species_list <- unique(bean_species$species)
 
@@ -188,18 +188,18 @@ bean_species_list <- unique(bean_species$species)
 for(i in bean_species_list){  # Open loop
   
   
-  # a gets a subset of growth.rate data minus species i.
+  # a gets a subset of scaled data minus species i.
   
   bean_removed_species <- subset(bean_species, species != i) 
   
   
-  # occupancy.mean gets removed_species 
+  # occupancy_mean gets removed_species 
   # removed_species is grouped by year
   # yearly mean growthrates of all species are calulated
   
   bean_occupancy_mean <- bean_removed_species %>% 
     group_by(year) %>%
-    summarise(mean.occupancy = mean(occupancy, na.rm = TRUE))
+    summarise(mean_occupancy = mean(occupancy, na.rm = TRUE))
   
   
   # Create plot of mean yearly growth rates across all species using subset of data
@@ -208,7 +208,7 @@ for(i in bean_species_list){  # Open loop
   bean_mean_occupancy_plot <- ggplot(
     bean_occupancy_mean, aes(
       x = year,
-      y = mean.occupancy)) + 
+      y = mean_occupancy)) + 
     geom_hline(yintercept = 0) +
     coord_cartesian(xlim = c(1985, 2015), ylim = c(-1.5, 2)) +
     scale_x_continuous(breaks = seq(1985, 2015, by = 2)) +
@@ -228,7 +228,7 @@ for(i in bean_species_list){  # Open loop
 # Plot and calculate deficits
 
 
-# Create list of species from growth.rate data
+# Create list of species from scaled data
 
 bean_species_list <- unique(bean_species$species)
 
@@ -241,18 +241,18 @@ deficit_table <- NULL
 for(i in bean_species_list){  # Open loop
   
   
-  # a gets a subset of growth.rate data minus species i.
+  # a gets a subset of scaled data minus species i.
   
   bean_removed_species <- subset(bean_species, species != i) 
   
   
-  # occupancy.mean gets removed_species 
+  # occupancy_mean gets removed_species 
   # removed_species is grouped by year
   # yearly mean growthrates of all species are calulated
   
   bean_occupancy_mean <- bean_removed_species %>% 
     group_by(year) %>%
-    summarise(mean.occupancy = mean(occupancy, na.rm = TRUE))
+    summarise(mean_occupancy = mean(occupancy, na.rm = TRUE))
   bean_occupancy_mean
   
   # Create plot of mean yearly growth rates across all species using subset of data
@@ -261,7 +261,7 @@ for(i in bean_species_list){  # Open loop
   bean_mean_occupancy_plot <- ggplot(
     bean_occupancy_mean, aes(
       x = year,
-      y = mean.occupancy)) +
+      y = mean_occupancy)) +
     geom_hline(aes(yintercept= -0.1) , colour="red") +
     geom_hline(yintercept = 0) +
     coord_cartesian(xlim = c(1985, 2015), ylim = c(-1.5, 2)) +
@@ -278,16 +278,16 @@ for(i in bean_species_list){  # Open loop
   
   
   deficit <- bean_occupancy_mean %>% 
-    mutate( theta = -0.1, deficit = mean.occupancy - theta)
+    mutate( theta = -0.1, deficit = mean_occupancy - theta)
   
   deficit <- deficit %>% filter(deficit < 0)
   
   
   a <- sum(deficit$deficit)
   b <- i
-  deficit.all <- cbind(a, b)
+  deficit_all <- cbind(a, b)
   
-  deficit_table <- rbind(deficit_table, deficit.all)
+  deficit_table <- rbind(deficit_table, deficit_all)
   
 } # Close loop
 deficit_table
